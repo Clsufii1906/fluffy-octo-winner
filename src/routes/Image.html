@@ -1,0 +1,78 @@
+<script>
+  import { onMount } from 'svelte';
+
+  export let pm;
+  export let shiny = undefined;
+
+  const REPO = 'PokeMiners/pogo_assets';
+  const FOLDER = 'Images/Pokemon%20-%20256x256';
+
+  let fn = pm.fn;
+  let cfn = shiny ? pm.cfn1 : pm.cfn0;
+
+  const _fn = `pokemon_icon_${fn}${shiny ? '_shiny' : ''}.png`;
+  const imgPath = `${FOLDER}/${_fn}`;
+
+  if (pm.aa_fn) {
+    cfn = getCdnSrc(`${FOLDER}/Addressable%20Assets/${pm.aa_fn}${shiny ? '.s' : ''}.icon.png`);
+  }
+
+  for (let prop in $$restProps) {
+    if (!checkImgValidProp(prop)) {
+      delete $$restProps[prop];
+    }
+  }
+
+  let imgRef;
+
+  const rawSrc = cfn || getRawSrc();
+  const cdnSrc = cfn || getCdnSrc();
+  const proxySrc = cfn || getProxySrc(rawSrc);
+
+  let src = null;
+
+  function getRawSrc() {
+    return `https://raw.githubusercontent.com/${REPO}/master/${imgPath}`;
+  }
+
+  function getCdnSrc(path = '') {
+    return `https://cdn.jsdelivr.net/gh/${REPO}/${path || imgPath}`;
+  }
+
+  function getProxySrc(src = '') {
+    const dpr = window.devicePixelRatio || 1;
+    return `https://images.weserv.nl/?dpr=${dpr}&w=200&il&url=${src}`
+  }
+
+  function checkImgValidProp(prop) {
+    const img = new Image();
+    return prop in img;
+  }
+
+  onMount(() => {
+    src = cdnSrc;
+
+    const handleImgError = () => {
+      console.error('handleImgError', imgRef.src, rawSrc);
+      if (imgRef.src !== rawSrc) {
+        src = rawSrc;
+      } else {
+        imgRef.removeEventListener('error', handleImgError);
+      }
+    };
+
+    imgRef.addEventListener('error', handleImgError);
+    return () => imgRef.removeEventListener('error', handleImgError);
+  });
+</script>
+
+<img
+  bind:this={imgRef}
+  class="pm-img"
+  src={src}
+  width="200"
+  height="200"
+  loading="lazy"
+  alt=""
+  {...$$restProps}
+/>
