@@ -1,0 +1,16 @@
+{
+	"name": "Pokémon Shiny",
+	"short_name": "Shiny List",
+	"start_url": "/Pokemon-shiny/index.html",
+	"icons": [{
+		"src": "./icon.png",
+		"sizes": "512x512",
+		"type": "image/png"
+	}],
+	"theme_color": "#ffffcc",
+	"scope": "/Pokemon-shiny/",
+	"background_color": "#ffffff",
+	"display": "standalone",
+	"update": "2019-09-03",
+	"orientation": "any"
+}
